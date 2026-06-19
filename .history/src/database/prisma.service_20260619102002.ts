@@ -1,5 +1,0 @@
-import { Global, Injectable } from '@nestjs/common';
-
-@Global()
-@Injectable()
-export class PrismaService extends PrismaC {}
