@@ -1,0 +1,2 @@
+@Ije
+export class PrismaService {}
