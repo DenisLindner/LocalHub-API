@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +11,14 @@ async function bootstrap() {
   const port = configService.getOrThrow<number>('app.port');
 
   app.enableCors();
+  app.useGlobalPipes(
+    new ValidationPipe(
+      { 
+        whitelist: true, 
+        transform: true, 
+        forbidNonWhitelisted: true,
+      })
+  );
 
   await app.listen(port);
 }
