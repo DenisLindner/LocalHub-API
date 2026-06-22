@@ -7,9 +7,9 @@ import { UsersModule } from './modules/users/users.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { TasksModule } from './modules/tasks/tasks.module';
-import { CostumersModule } from './modules/costumers/costumers.module';
 import { ProductsservicesModule } from './modules/productsservices/productsservices.module';
 import { MembersModule } from './modules/members/members.module';
+import { CustomersModule } from './modules/customers/customers.module';
 import databaseConfig from './config/database.config';
 import authConfig from './config/auth.config';
 import appConfig from './config/app.config';
@@ -31,9 +31,9 @@ import appConfig from './config/app.config';
     OrganizationsModule,
     SubscriptionsModule,
     TasksModule,
-    CostumersModule,
     ProductsservicesModule,
     MembersModule,
+    CustomersModule,
   ],
   controllers: [],
   providers: [],
