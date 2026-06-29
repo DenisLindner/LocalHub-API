@@ -95,12 +95,12 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token not found');
     }
 
-    if (!refresh.revokedAt) {
-      throw new UnauthorizedException('Refresh token invalid');
+    if (refresh.revokedAt) {
+      throw new UnauthorizedException('Refresh token revoked');
     }
 
-    if (refresh.revokedAt > new Date(Date.now())) {
-      throw new UnauthorizedException('Refresh token revoked');
+    if (refresh.expiresAt < new Date(Date.now())) {
+      throw new UnauthorizedException('Refresh token expired');
     }
 
     const user = await this.usersService.findById(refresh.userId);
@@ -113,12 +113,18 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token user is not active');
     }
 
-    await this.tokenService.revokeToken(hashRefreshToken(payload.refreshToken));
-
-    return await this.generateTokens({
-      sub: payload.sub,
-      email: payload.email,
+    const tokens = await this.generateTokens({
+      sub: user.id,
+      email: user.email,
     });
+
+    await this.tokenService.rotateToken(
+      hashRefreshToken(payload.refreshToken),
+      hashRefreshToken(tokens.refreshToken),
+      user.id,
+    );
+
+    return tokens;
   }
 
   async logout(refreshToken: string): Promise<void> {

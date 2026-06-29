@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/database/prisma.service';
 import ms, { StringValue } from 'ms';
@@ -55,6 +59,37 @@ export class TokenService {
       console.log('Error updating Refresh Token: ' + error);
       throw new InternalServerErrorException('Error updating Refresh Token');
     }
+  }
+
+  async rotateToken(tokenRevoke: string, tokenCreate: string, userId: string) {
+    const now = new Date(Date.now());
+    await this.prisma.$transaction(async (tx) => {
+      const revokedToken = await tx.refreshToken.updateMany({
+        where: {
+          tokenHash: tokenRevoke,
+          userId,
+          revokedAt: null,
+          expiresAt: {
+            gt: now,
+          },
+        },
+        data: {
+          revokedAt: now,
+        },
+      });
+
+      if (revokedToken.count !== 1) {
+        throw new UnauthorizedException('Refresh token invalid');
+      }
+
+      await tx.refreshToken.create({
+        data: {
+          userId,
+          tokenHash: tokenCreate,
+          expiresAt: this.getRefreshTokenExpiresAt(),
+        },
+      });
+    });
   }
 
   private getRefreshTokenExpiresAt(): Date {
