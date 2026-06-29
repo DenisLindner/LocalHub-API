@@ -1,6 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +10,8 @@ import ms, { StringValue } from 'ms';
 
 @Injectable()
 export class TokenService {
+  private logger = new Logger(TokenService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
@@ -24,7 +27,7 @@ export class TokenService {
         },
       });
     } catch (error) {
-      console.log('Error saving Refresh Token: ' + error);
+      this.logger.error('Error saving Refresh Token: ' + error);
       throw new InternalServerErrorException('Error saving Refresh Token');
     }
   }
@@ -41,7 +44,7 @@ export class TokenService {
         },
       });
     } catch (error) {
-      console.log('Error getting Refresh Token: ' + error);
+      this.logger.error('Error getting Refresh Token: ' + error);
       throw new InternalServerErrorException('Error getting Refresh Token');
     }
   }
@@ -56,7 +59,7 @@ export class TokenService {
         },
       });
     } catch (error) {
-      console.log('Error updating Refresh Token: ' + error);
+      this.logger.error('Error updating Refresh Token: ' + error);
       throw new InternalServerErrorException('Error updating Refresh Token');
     }
   }

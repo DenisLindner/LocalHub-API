@@ -1,9 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class UsersService {
+  private logger = new Logger(UsersService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: RegisterDto, passwordHash: string) {
@@ -20,8 +26,8 @@ export class UsersService {
         },
       });
     } catch (error) {
-      console.log('Error creating user: ' + error);
-      throw new Error('Error creating user');
+      this.logger.error('Error creating user: ' + error);
+      throw new InternalServerErrorException('Error creating user');
     }
   }
 
@@ -37,8 +43,8 @@ export class UsersService {
         },
       });
     } catch (error) {
-      console.log('Error finding user by email: ' + error);
-      throw new Error('Error finding user by email');
+      this.logger.error('Error finding user by email: ' + error);
+      throw new InternalServerErrorException('Error finding user by email');
     }
   }
 
@@ -54,8 +60,8 @@ export class UsersService {
         },
       });
     } catch (error) {
-      console.log('Error finding user by email: ' + error);
-      throw new Error('Error finding user by email');
+      this.logger.error('Error finding user by email: ' + error);
+      throw new InternalServerErrorException('Error finding user by email');
     }
   }
 }
